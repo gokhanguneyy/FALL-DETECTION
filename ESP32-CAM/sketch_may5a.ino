@@ -175,15 +175,9 @@ void initCamera() {
   config.xclk_freq_hz = 20000000;
   config.pixel_format = PIXFORMAT_JPEG;
 
-  if (psramFound()) {
-    config.frame_size = FRAMESIZE_UXGA;
-    config.jpeg_quality = 10;
-    config.fb_count = 2;
-  } else {
-    config.frame_size = FRAMESIZE_SVGA;
-    config.jpeg_quality = 12;
-    config.fb_count = 1;
-  }
+  config.frame_size = FRAMESIZE_QVGA;  // 320x240 çözünürlük
+  config.jpeg_quality = 12;            // Orta kalite (0-63 arası)
+  config.fb_count = 2;
 
   esp_err_t err = esp_camera_init(&config);
   if (err != ESP_OK) {
@@ -218,23 +212,75 @@ void setupSoftAP() {
   Serial.print("AP IP: ");
   Serial.println(WiFi.softAPIP());
 
-  setupServer.on("/", HTTP_GET, []() {
-    setupServer.send(200, "text/html",
-      "<h3>WiFi Ayarları</h3>"
-      "<form action='/connect' method='POST'>"
-      "SSID: <input type='text' name='ssid'><br>"
-      "Şifre: <input type='password' name='password'><br><br>"
-      "<input type='submit' value='Bağlan'>"
-      "</form>");
-  });
+setupServer.on("/", HTTP_GET, []() {
+  setupServer.send(200, "text/html",
+    "<!DOCTYPE html>"
+    "<html>"
+    "<head>"
+    "<meta charset='UTF-8'>"
+    "<title>WiFi Configuration</title>"
+    "<style>"
+    "body {"
+    "  display: flex;"
+    "  justify-content: center;"
+    "  align-items: center;"
+    "  height: 100vh;"
+    "  margin: 0;"
+    "  background-color: #f0f0f0;"
+    "  font-family: Arial, sans-serif;"
+    "}"
+    "form {"
+    "  width: 320px;"
+    "  padding: 20px;"
+    "  box-sizing: border-box;"
+    "  background: white;"
+    "  border-radius: 10px;"
+    "  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);"
+    "}"
+    "h3 {"
+    "  margin-top: 0;"
+    "  margin-bottom: 15px;"
+    "  text-align: center;"
+    "}"
+    "input[type='text'], input[type='password'], input[type='submit'] {"
+    "  box-sizing: border-box;"
+    "  width: 100%;"
+    "  padding: 10px;"
+    "  margin-bottom: 15px;"
+    "  border: 1px solid #ccc;"
+    "  border-radius: 5px;"
+    "}"
+    "input[type='submit'] {"
+    "  background-color: #007BFF;"
+    "  color: white;"
+    "  border: none;"
+    "  cursor: pointer;"
+    "}"
+    "input[type='submit']:hover {"
+    "  background-color: #0056b3;"
+    "}"
+    "</style>"
+    "</head>"
+    "<body>"
+    "<form action='/connect' method='POST'>"
+    "<h3>WiFi Settings</h3>"
+    "<label>SSID:</label><input type='text' name='ssid' required>"
+    "<label>Password:</label><input type='password' name='password' required>"
+    "<input type='submit' value='Connect'>"
+    "</form>"
+    "</body>"
+    "</html>");
+});
+
+
 
   setupServer.on("/connect", HTTP_POST, []() {
     wifi_ssid = setupServer.arg("ssid");
     wifi_password = setupServer.arg("password");
 
     setupServer.send(200, "text/html", "<h3>Bağlanıyor...</h3>");
-    setupServer.stop();
-    WiFi.softAPdisconnect(true);
+    setupServer.stop();  // Server'ı durduruyoruz
+    WiFi.softAPdisconnect(true);  // SoftAP'yi doğru sırayla kapatıyoruz
     tryConnectAndStartCamera();
   });
 
