@@ -1,6 +1,10 @@
 # TUBITAK - FALL DETECTION SYSTEM WITH DEEP LEARNING METHODS
 In this TÜBİTAK-supported project, I was responsible for the hardware integration and software development of the ESP32-CAM and accelerometer components used in the fall detection system. In the system, when a sudden movement or fall is detected through accelerometer data, the ESP32-CAM module is triggered to capture an image of the environment. The captured image is then sent to an AI model based on YOLO and Convolutional Neural Networks (CNNs) for fall detection
 
+# PROJECT POSTER
+![DERİN ÖĞRENME YÖNTEMLERİ İLE DÜŞME TESPİT SİSTEMİ (1)](https://github.com/user-attachments/assets/a5c3e7a3-da21-4247-a5c1-070ee4bacc81)
+
+
 # MPU6050 ACCELEROMETER
 An MPU6050 accelerometer is placed on the user's body to continuously monitor real-time acceleration.
 When the calculated acceleration exceeds a predefined threshold, a connected camera module is activated.
